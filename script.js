@@ -8,7 +8,7 @@ const inputs = [
 ];
 
 let Traces = [];
-let mu = 0;
+let mu = 1;
 let standard_deviation = 1;
 let transformation_function = "x";
 
@@ -194,6 +194,22 @@ function unscentedTransform(mean, standard_deviation, transformation_function) {
   return [new_mean, new_covariance];
 }
 
+
+function updateLatex(old_mean, old_std_dev, new_mean, new_std_dev) {
+  const solutionString = `\\mu = ${old_mean.toFixed(3)}, \\quad \\sigma = ${old_std_dev.toFixed(3)}, \\quad \\mu' = ${new_mean.toFixed(3)}, \\quad \\sigma' = ${new_std_dev.toFixed(3)}`;
+
+  katex.render(solutionString, document.getElementById("solution"), {
+    throwOnError: false,
+  });
+
+  //const computationString = `\\mu = ${old_mean.toFixed(3)}, \\quad \\sigma = ${old_std_dev.toFixed(3)}, \\quad \\mu' = ${new_mean.toFixed(3)}, \\quad \\sigma' = ${new_std_dev.toFixed(3)}`;
+ 
+  //katex.render(solutionString, document.getElementById("computation"), {
+ //   throwOnError: false,
+ // });
+  
+}
+
 function updatePlot() {
   Traces = [];
   mu = parseFloat(document.getElementById("meanInput").value);
@@ -215,7 +231,7 @@ function updatePlot() {
 
   [x_points, y_points] = generateGaussian(mu, standard_deviation, -5, 5, 0.01);
   drawCurve(x_points, y_points, "Original Gaussian", "green");
-  
+
   [x_points, y_points] = generatePoints(transformation_function, -5, 5, 0.01);
   drawCurve(x_points, y_points, "Transformation Function", "red");
 
@@ -242,7 +258,11 @@ function updatePlot() {
   );
 
   let new_std_dev = Math.sqrt(new_covariance);
-  let transformedPoints = [new_mean, new_mean - new_std_dev, new_mean + new_std_dev];
+  let transformedPoints = [
+    new_mean,
+    new_mean - new_std_dev,
+    new_mean + new_std_dev,
+  ];
 
   graphPoints(
     transformedPoints,
@@ -255,6 +275,8 @@ function updatePlot() {
   drawCurve(x_points, y_points, "Transformed Gaussian", "blue");
 
   Plotly.newPlot("plot", Traces, graphLayout);
+  //document.getElementById("solution").textContent = `\\documentclass{article} \\begin{document} $m_u = ${mu}$, \\quad složitější: $\\frac{a+b}{c+d}$ \\end{document}`;
+  updateLatex(mu, standard_deviation, new_mean, new_std_dev);
 }
 
 updatePlot();

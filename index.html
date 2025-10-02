@@ -3,33 +3,61 @@
   <head>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="script.js" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+    />
+    <!-- KaTeX JS -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
   </head>
   <body>
     <div id="plot"></div>
+    <div id="solution"></div>
+    <div id="computation"></div>
+    <br />
+    <br />
     <label for="meanInput">Mean:</label>
-    <input id="meanInput" type="text" value="0" placeholder="standard deviation" />
-    <br>
-    <br>
+    <input
+      id="meanInput"
+      type="text"
+      value="0.3"
+      placeholder="standard deviation"
+    />
+    <br />
+    <br />
     <label for="standardDeviationInput">Standard Deviation:</label>
-    <input id="standardDeviationInput" type="text" value="0.3" placeholder="standard deviation" />
-    <br>
-    <br>
-    <label for="transformationFunctionInput">Transformation Function: y =</label>
-    <input id="transformationFunctionInput" type="text" value="-2*x**3" placeholder="transformation function" />
-    <br>
-    <br>
+    <input
+      id="standardDeviationInput"
+      type="text"
+      value="0.3"
+      placeholder="standard deviation"
+    />
+    <br />
+    <br />
+    <label for="transformationFunctionInput"
+      >Transformation Function: y =</label
+    >
+    <input
+      id="transformationFunctionInput"
+      type="text"
+      value="-2*x**3 + Math.sin(x*10)"
+      placeholder="transformation function"
+    />
+    <br />
+    <br />
     <label for="alphaInput">Alpha:</label>
     <input id="alphaInput" type="text" value="0.8" placeholder="alpha" />
-    <br>
-    <br>
+    <br />
+    <br />
     <label for="betaInput">Beta:</label>
     <input id="betaInput" type="text" value="2" placeholder="beta" />
-    <br>
-    <br>
+    <br />
+    <br />
     <label for="kappaInput">Kappa:</label>
     <input id="kappaInput" type="text" value="2" placeholder="kappa" />
-    <br>
-    <br>
+    <br />
+    <br />
     <button onclick="updatePlot()">Update</button>
   </body>
 </html>
