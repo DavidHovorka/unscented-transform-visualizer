@@ -8,12 +8,31 @@ const inputs = [
 ];
 
 let Traces = [];
-let mu = 1;
+//let mu = 1;
 let standard_deviation = 1;
 let transformation_function = "x";
 
 let x_points;
 let y_points;
+
+let old_mean = 0;
+let old_std_dev = 0;
+let new_mean = 0;
+let new_std_dev = 0;
+let new_covariance = 0;
+
+let n;
+let alpha;
+let beta;
+let kappa;
+let lambda;
+
+let sigmas = [];
+
+let weights_mean = [];
+let weights_covariance = [];
+
+let transformedPoints = [];
 //let mu = 1;
 //let standard_deviation = 1;
 
@@ -31,7 +50,6 @@ function generatePoints(expression, x_min, x_max, step) {
 
   return [x_points, y_points]; // vrací pole
 }
-
 function drawCurve(x_points, y_points, name, color) {
   Traces.push({
     x: x_points,
@@ -41,7 +59,6 @@ function drawCurve(x_points, y_points, name, color) {
     name: name,
   });
 }
-
 // Standard Normal variate using Box-Muller transform.
 function gaussianRandom(mean, stdev) {
   const u = 1 - Math.random(); // Converting [0,1) to (0,1]
@@ -50,7 +67,6 @@ function gaussianRandom(mean, stdev) {
   // Transform to the desired mean and standard deviation:
   return z * stdev + mean;
 }
-
 function transformPoints(expression, x_points) {
   for (let i = 0; i < x_points.length; i++) {
     let x = x_points[i];
@@ -58,7 +74,6 @@ function transformPoints(expression, x_points) {
   }
   return x_points;
 }
-
 function generateGaussian(mean, std_dev, min_x, max_x, step) {
   const x_points = [];
   const y_points = [];
@@ -73,7 +88,6 @@ function generateGaussian(mean, std_dev, min_x, max_x, step) {
 
   return [x_points, y_points];
 }
-
 function graphWeightedPoints(
   x_points,
   y_points,
@@ -97,7 +111,6 @@ function graphWeightedPoints(
     name: name,
   });
 }
-
 function graphPoints(transformedPoints, y_points, name, color) {
   Traces.push({
     x: transformedPoints,
@@ -113,16 +126,8 @@ function graphPoints(transformedPoints, y_points, name, color) {
   });
 }
 
-let n;
-let alpha;
-let beta;
-let kappa;
-let lambda;
-
 function unscentedTransform(mean, standard_deviation, transformation_function) {
-  sigmas = [];
   sigmas[0] = mean;
-
   // generate sigma points
   // only 1D; L = 2n + 1
   n = 1;
@@ -145,8 +150,6 @@ function unscentedTransform(mean, standard_deviation, transformation_function) {
   sigmas[2] = mean - spread;
 
   // generate weights
-  weights_mean = [];
-  weights_covariance = [];
   weights_mean[0] = lambda / (n + lambda);
   weights_covariance[0] = lambda / (n + lambda) + (1 - alpha ** 2 + beta);
 
@@ -200,48 +203,93 @@ function unscentedTransform(mean, standard_deviation, transformation_function) {
   return [new_mean, new_covariance];
 }
 
-
-function updateLatex(old_mean, old_std_dev, new_mean, new_std_dev, alpha, beta, kappa, n, lambda) {
-  const solutionString = `\\mu = ${old_mean.toFixed(3)}, \\quad \\sigma = ${old_std_dev.toFixed(3)}, \\quad \\mu' = ${new_mean.toFixed(3)}, \\quad \\sigma' = ${new_std_dev.toFixed(3)}`;
+function updateLatex() {
+  const solutionString = `\\mu = ${old_mean.toFixed(
+    3
+  )}, \\quad \\sigma = ${old_std_dev.toFixed(
+    3
+  )}, \\quad \\mu' = ${new_mean.toFixed(
+    3
+  )}, \\quad \\sigma' = ${new_std_dev.toFixed(3)}`;
   katex.render(solutionString, document.getElementById("solutionLatex"), {
     throwOnError: false,
   });
 
-  const computationString = `\\lambda = ${alpha}^2 \\times (${n} + ${kappa}) - ${n} = ${lambda.toFixed(3)}`;
+  const computationString = `\\lambda = ${alpha}^2 \\times (${n} + ${kappa}) - ${n} = ${lambda.toFixed(
+    3
+  )}`;
   katex.render(computationString, document.getElementById("lambdaLatex"), {
     throwOnError: false,
   });
 
-  const sigmasString = `\\chi^0 = ${old_mean}, \\chi^1 = ${(old_mean + (Math.sqrt((n + lambda) * Math.pow(old_std_dev, 2)))).toFixed(3)}, \\chi^2 = ${(old_mean - (Math.sqrt((n + lambda) * Math.pow(old_std_dev, 2)))).toFixed(3)}`;
+  const sigmasString = `\\chi^0 = ${sigmas[0].toFixed(
+    3
+  )}, \\chi^1 = ${sigmas[1].toFixed(3)}, \\chi^2 = ${sigmas[2].toFixed(3)}`;
   katex.render(sigmasString, document.getElementById("sigmasLatex"), {
     throwOnError: false,
   });
 
-  const weightsMeanString = `w^0_m = ${(lambda / (n + lambda)).toFixed(3)}, w^1_m = ${(1/(2*(1 + lambda))).toFixed(3)}, w^2_m = ${((1/(2*(n + lambda)))).toFixed(3)}`;
+  const weightsMeanString = `w^0_m = ${weights_mean[0].toFixed(
+    3
+  )}, w^1_m = ${weights_mean[1].toFixed(3)}, w^2_m = ${weights_mean[2].toFixed(
+    3
+  )}`;
   katex.render(weightsMeanString, document.getElementById("weightsMeanLatex"), {
     throwOnError: false,
   });
 
-  const weightsCovarianceString = `w^0_c = ${((lambda/(n + lambda)) + (1 - alpha**2 + beta)).toFixed(3)}, w^1_c = ${(1/(2*(n + lambda))).toFixed(3)}, w^2_c = ${((1/(2*(n + lambda)))).toFixed(3)}`;
-  katex.render(weightsCovarianceString, document.getElementById("weightsCovarianceLatex"), {
-    throwOnError: false,
-  });
+  const weightsCovarianceString = `w^0_c = ${weights_covariance[0].toFixed(
+    3
+  )}, w^1_c = ${weights_covariance[1].toFixed(
+    3
+  )}, w^2_c = ${weights_covariance[2].toFixed(3)}`;
+  katex.render(
+    weightsCovarianceString,
+    document.getElementById("weightsCovarianceLatex"),
+    {
+      throwOnError: false,
+    }
+  );
   //newMeanComputationLatex
-  const newMeanComputationString = `\\mu' = \\sum_{i=0}^{2n} w_m^{[i]} \\mathbf{y}^{[i]}`;
-  katex.render(newMeanComputationString, document.getElementById("newMeanComputationLatex"), {
-    throwOnError: false,
-  });
+  const newMeanComputationString = `\\mu' = \\sum_{i=0}^{2n} w_m^{[i]} \\mathbf{y}^{[i]} = ${weights_mean[0].toFixed(
+    3
+  )} \\times ${transformedPoints[0].toFixed(3)} + ${weights_mean[1].toFixed(
+    3
+  )} \\times ${transformedPoints[1].toFixed(3)} + ${weights_mean[2].toFixed(
+    3
+  )} \\times ${transformedPoints[2].toFixed(3)} = ${new_mean.toFixed(3)}`;
+  katex.render(
+    newMeanComputationString,
+    document.getElementById("newMeanComputationLatex"),
+    {
+      throwOnError: false,
+    }
+  );
 
-  const newCovarianceComputationString = `\\sigma' = \\sum_{i=0}^{2n} w_c^{[i]} \\mathbf{y}^{[i]}`;
-  katex.render(newCovarianceComputationString, document.getElementById("newCovarianceComputationLatex"), {
-    throwOnError: false,
-  });
+  const newCovarianceComputationString = `\\sigma' = \\sum_{i=0}^{2n} w_c^{[i]} \\mathbf{y}^{[i]} = ${weights_covariance[0].toFixed(
+    3
+  )} \\times ${transformedPoints[0].toFixed(
+    3
+  )} + ${weights_covariance[1].toFixed(
+    3
+  )} \\times ${transformedPoints[1].toFixed(
+    3
+  )} + ${weights_covariance[2].toFixed(
+    3
+  )} \\times ${transformedPoints[2].toFixed(3)} = ${new_covariance.toFixed(3)}`;
+  katex.render(
+    newCovarianceComputationString,
+    document.getElementById("newCovarianceComputationLatex"),
+    {
+      throwOnError: false,
+    }
+  );
 }
 
 function updatePlot() {
   Traces = [];
-  mu = parseFloat(document.getElementById("meanInput").value);
-  standard_deviation = parseFloat(
+  old_mean = parseFloat(document.getElementById("meanInput").value);
+  old_std_dev = parseFloat(
     document.getElementById("standardDeviationInput").value
   );
   transformation_function = document.getElementById(
@@ -249,7 +297,7 @@ function updatePlot() {
   ).value; //"2 * x";
 
   const graphLayout = {
-    title: "Unscented transformation",
+    title: "Unscented Transformation",
     xaxis: { title: "x", range: [-2, 2] },
     yaxis: {
       title: "y",
@@ -257,7 +305,7 @@ function updatePlot() {
     },
   };
 
-  [x_points, y_points] = generateGaussian(mu, standard_deviation, -5, 5, 0.01);
+  [x_points, y_points] = generateGaussian(old_mean, old_std_dev, -5, 5, 0.01);
   drawCurve(x_points, y_points, "Original Gaussian", "green");
 
   [x_points, y_points] = generatePoints(transformation_function, -5, 5, 0.01);
@@ -266,7 +314,7 @@ function updatePlot() {
   // histogram
   var histogram_x = [];
   for (var i = 0; i < 50000; i++) {
-    histogram_x[i] = gaussianRandom(mu, standard_deviation); //(Math.random() * 10) - 5;
+    histogram_x[i] = gaussianRandom(old_mean, old_std_dev); //(Math.random() * 10) - 5;
   }
   histogram_x = transformPoints(transformation_function, histogram_x);
   Traces.push({
@@ -279,14 +327,14 @@ function updatePlot() {
   });
 
   // unscented transform
-  let [new_mean, new_covariance] = unscentedTransform(
-    mu,
-    standard_deviation,
+  [new_mean, new_covariance] = unscentedTransform(
+    old_mean,
+    old_std_dev,
     transformation_function
   );
 
-  let new_std_dev = Math.sqrt(new_covariance);
-  let transformedPoints = [
+  new_std_dev = Math.sqrt(new_covariance);
+  transformedPoints = [
     new_mean,
     new_mean - new_std_dev,
     new_mean + new_std_dev,
@@ -303,8 +351,8 @@ function updatePlot() {
   drawCurve(x_points, y_points, "Transformed Gaussian", "blue");
 
   Plotly.newPlot("plot", Traces, graphLayout);
-  //document.getElementById("solution").textContent = `\\documentclass{article} \\begin{document} $m_u = ${mu}$, \\quad složitější: $\\frac{a+b}{c+d}$ \\end{document}`;
-  updateLatex(mu, standard_deviation, new_mean, new_std_dev, alpha, beta, kappa, n, lambda);
+
+  updateLatex(alpha, beta, kappa, n, lambda);
 }
 
 updatePlot();

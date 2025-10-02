@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Unscented Transform Visualization</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="script.js" defer></script>
     <link
@@ -12,57 +13,95 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
   </head>
   <body>
+    <style>
+      body {
+        margin: 20px;
+        font-family: sans-serif;
+      }
+
+      #plot {
+        height: 400px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+      }
+
+      .container {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+      }
+
+      .latexes {
+        display: flex;
+        flex-direction: column;
+        width: 600px;
+        border: 1px solid #f0f0f0;
+        padding: 10px;
+      }
+
+      .inputs {
+        display: flex;
+        flex-direction: column;
+        margin-left: auto;
+        width: 300px;
+        border: 1px solid #f0f0f0;
+        padding: 10px;
+      }
+
+      label {
+        margin-bottom: 4px;
+      }
+
+      input {
+        margin-bottom: 12px;
+        padding: 4px;
+      }
+    </style>
     <div id="plot"></div>
-    <div id="solutionLatex"></div>
-    <div id="lambdaLatex"></div>
-    <div id="sigmasLatex"></div>
-    <div id="weightsMeanLatex"></div>
-    <div id="weightsCovarianceLatex"></div>
-    <div id="newMeanComputationLatex"></div>
-    <div id="newCovarianceComputationLatex"></div>
-    <br />
-    <br />
-    <label for="meanInput">Mean:</label>
-    <input
-      id="meanInput"
-      type="text"
-      value="0.3"
-      placeholder="standard deviation"
-    />
-    <br />
-    <br />
-    <label for="standardDeviationInput">Standard Deviation:</label>
-    <input
-      id="standardDeviationInput"
-      type="text"
-      value="0.3"
-      placeholder="standard deviation"
-    />
-    <br />
-    <br />
-    <label for="transformationFunctionInput"
-      >Transformation Function: y =</label
-    >
-    <input
-      id="transformationFunctionInput"
-      type="text"
-      value="-2*x**3 + Math.sin(x*10)"
-      placeholder="transformation function"
-    />
-    <br />
-    <br />
-    <label for="alphaInput">Alpha:</label>
-    <input id="alphaInput" type="text" value="0.8" placeholder="alpha" />
-    <br />
-    <br />
-    <label for="betaInput">Beta:</label>
-    <input id="betaInput" type="text" value="2" placeholder="beta" />
-    <br />
-    <br />
-    <label for="kappaInput">Kappa:</label>
-    <input id="kappaInput" type="text" value="2" placeholder="kappa" />
-    <br />
-    <br />
-    <button onclick="updatePlot()">Update</button>
+    <div class="container">
+      <div class="inputs">
+        <label for="meanInput">Mean:</label>
+        <input
+          id="meanInput"
+          type="text"
+          value="0.3"
+          placeholder="standard deviation"
+        />
+        <label for="standardDeviationInput">Standard Deviation:</label>
+        <input
+          id="standardDeviationInput"
+          type="text"
+          value="0.3"
+          placeholder="standard deviation"
+        />
+        <label for="transformationFunctionInput"
+          >Transformation Function: y =</label
+        >
+        <input
+          id="transformationFunctionInput"
+          type="text"
+          value="-2*x**3 + Math.sin(x*10)"
+          placeholder="transformation function"
+        />
+        <label for="alphaInput">Alpha:</label>
+        <input id="alphaInput" type="text" value="0.8" placeholder="alpha" />
+        <label for="betaInput">Beta:</label>
+        <input id="betaInput" type="text" value="2" placeholder="beta" />
+        <label for="kappaInput">Kappa:</label>
+        <input id="kappaInput" type="text" value="2" placeholder="kappa" />
+        <!--<button onclick="updatePlot()">Update</button>-->
+      </div>
+      <div class="latexes">
+        <div id="solutionLatex"></div>
+        <br />
+        <div id="lambdaLatex"></div>
+        <div id="sigmasLatex"></div>
+        <div id="weightsMeanLatex"></div>
+        <div id="weightsCovarianceLatex"></div>
+        <br />
+        <div id="newMeanComputationLatex"></div>
+        <div id="newCovarianceComputationLatex"></div>
+      </div>
+    </div>
   </body>
 </html>
