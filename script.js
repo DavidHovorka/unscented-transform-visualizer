@@ -113,18 +113,24 @@ function graphPoints(transformedPoints, y_points, name, color) {
   });
 }
 
+let n;
+let alpha;
+let beta;
+let kappa;
+let lambda;
+
 function unscentedTransform(mean, standard_deviation, transformation_function) {
   sigmas = [];
   sigmas[0] = mean;
 
   // generate sigma points
   // only 1D; L = 2n + 1
-  let n = 1;
-  let alpha = parseFloat(document.getElementById("alphaInput").value);
-  let beta = parseFloat(document.getElementById("betaInput").value);
-  let kappa = parseFloat(document.getElementById("kappaInput").value);
+  n = 1;
+  alpha = parseFloat(document.getElementById("alphaInput").value);
+  beta = parseFloat(document.getElementById("betaInput").value);
+  kappa = parseFloat(document.getElementById("kappaInput").value);
 
-  let lambda = alpha ** 2 * (n + kappa) - n;
+  lambda = alpha ** 2 * (n + kappa) - n;
 
   // Numerical stability check
   if (Math.abs(n + lambda) < 1e-10) {
@@ -195,19 +201,41 @@ function unscentedTransform(mean, standard_deviation, transformation_function) {
 }
 
 
-function updateLatex(old_mean, old_std_dev, new_mean, new_std_dev) {
+function updateLatex(old_mean, old_std_dev, new_mean, new_std_dev, alpha, beta, kappa, n, lambda) {
   const solutionString = `\\mu = ${old_mean.toFixed(3)}, \\quad \\sigma = ${old_std_dev.toFixed(3)}, \\quad \\mu' = ${new_mean.toFixed(3)}, \\quad \\sigma' = ${new_std_dev.toFixed(3)}`;
-
-  katex.render(solutionString, document.getElementById("solution"), {
+  katex.render(solutionString, document.getElementById("solutionLatex"), {
     throwOnError: false,
   });
 
-  //const computationString = `\\mu = ${old_mean.toFixed(3)}, \\quad \\sigma = ${old_std_dev.toFixed(3)}, \\quad \\mu' = ${new_mean.toFixed(3)}, \\quad \\sigma' = ${new_std_dev.toFixed(3)}`;
- 
-  //katex.render(solutionString, document.getElementById("computation"), {
- //   throwOnError: false,
- // });
-  
+  const computationString = `\\lambda = ${alpha}^2 \\times (${n} + ${kappa}) - ${n} = ${lambda.toFixed(3)}`;
+  katex.render(computationString, document.getElementById("lambdaLatex"), {
+    throwOnError: false,
+  });
+
+  const sigmasString = `\\chi^0 = ${old_mean}, \\chi^1 = ${(old_mean + (Math.sqrt((n + lambda) * Math.pow(old_std_dev, 2)))).toFixed(3)}, \\chi^2 = ${(old_mean - (Math.sqrt((n + lambda) * Math.pow(old_std_dev, 2)))).toFixed(3)}`;
+  katex.render(sigmasString, document.getElementById("sigmasLatex"), {
+    throwOnError: false,
+  });
+
+  const weightsMeanString = `w^0_m = ${(lambda / (n + lambda)).toFixed(3)}, w^1_m = ${(1/(2*(1 + lambda))).toFixed(3)}, w^2_m = ${((1/(2*(n + lambda)))).toFixed(3)}`;
+  katex.render(weightsMeanString, document.getElementById("weightsMeanLatex"), {
+    throwOnError: false,
+  });
+
+  const weightsCovarianceString = `w^0_c = ${((lambda/(n + lambda)) + (1 - alpha**2 + beta)).toFixed(3)}, w^1_c = ${(1/(2*(n + lambda))).toFixed(3)}, w^2_c = ${((1/(2*(n + lambda)))).toFixed(3)}`;
+  katex.render(weightsCovarianceString, document.getElementById("weightsCovarianceLatex"), {
+    throwOnError: false,
+  });
+  //newMeanComputationLatex
+  const newMeanComputationString = `\\mu' = \\sum_{i=0}^{2n} w_m^{[i]} \\mathbf{y}^{[i]}`;
+  katex.render(newMeanComputationString, document.getElementById("newMeanComputationLatex"), {
+    throwOnError: false,
+  });
+
+  const newCovarianceComputationString = `\\sigma' = \\sum_{i=0}^{2n} w_c^{[i]} \\mathbf{y}^{[i]}`;
+  katex.render(newCovarianceComputationString, document.getElementById("newCovarianceComputationLatex"), {
+    throwOnError: false,
+  });
 }
 
 function updatePlot() {
@@ -225,7 +253,7 @@ function updatePlot() {
     xaxis: { title: "x", range: [-2, 2] },
     yaxis: {
       title: "y",
-      range: [-1, 1],
+      range: [-1.5, 1.5],
     },
   };
 
@@ -276,7 +304,7 @@ function updatePlot() {
 
   Plotly.newPlot("plot", Traces, graphLayout);
   //document.getElementById("solution").textContent = `\\documentclass{article} \\begin{document} $m_u = ${mu}$, \\quad složitější: $\\frac{a+b}{c+d}$ \\end{document}`;
-  updateLatex(mu, standard_deviation, new_mean, new_std_dev);
+  updateLatex(mu, standard_deviation, new_mean, new_std_dev, alpha, beta, kappa, n, lambda);
 }
 
 updatePlot();
