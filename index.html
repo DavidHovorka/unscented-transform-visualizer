@@ -60,6 +60,15 @@
     <div id="plot"></div>
     <div class="container">
       <div class="inputs">
+        <label for="transformationFunctionInput"
+          >Transformation Function: y =</label
+        >
+        <input
+          id="transformationFunctionInput"
+          type="text"
+          value="-2*x**3 + Math.sin(x*10)"
+          placeholder="transformation function"
+        />
         <label for="meanInput">Mean:</label>
         <input
           id="meanInput"
@@ -73,15 +82,6 @@
           type="text"
           value="0.3"
           placeholder="standard deviation"
-        />
-        <label for="transformationFunctionInput"
-          >Transformation Function: y =</label
-        >
-        <input
-          id="transformationFunctionInput"
-          type="text"
-          value="-2*x**3 + Math.sin(x*10)"
-          placeholder="transformation function"
         />
         <label for="alphaInput">Alpha:</label>
         <input id="alphaInput" type="text" value="0.8" placeholder="alpha" />

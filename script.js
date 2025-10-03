@@ -297,7 +297,7 @@ function updatePlot() {
   ).value; //"2 * x";
 
   const graphLayout = {
-    title: "Unscented Transformation",
+    title: "Unscented Transform",
     xaxis: { title: "x", range: [-2, 2] },
     yaxis: {
       title: "y",
@@ -305,10 +305,10 @@ function updatePlot() {
     },
   };
 
-  [x_points, y_points] = generateGaussian(old_mean, old_std_dev, -5, 5, 0.01);
+  [x_points, y_points] = generateGaussian(old_mean, old_std_dev, -2, 2, 0.01);
   drawCurve(x_points, y_points, "Original Gaussian", "green");
 
-  [x_points, y_points] = generatePoints(transformation_function, -5, 5, 0.01);
+  [x_points, y_points] = generatePoints(transformation_function, -2, 2, 0.01);
   drawCurve(x_points, y_points, "Transformation Function", "red");
 
   // histogram
@@ -350,7 +350,7 @@ function updatePlot() {
   [x_points, y_points] = generateGaussian(new_mean, new_std_dev, -5, 5, 0.01);
   drawCurve(x_points, y_points, "Transformed Gaussian", "blue");
 
-  Plotly.newPlot("plot", Traces, graphLayout);
+  Plotly.newPlot("plot", Traces, graphLayout, {displayModeBar: false});
 
   updateLatex(alpha, beta, kappa, n, lambda);
 }
