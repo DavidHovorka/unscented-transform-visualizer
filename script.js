@@ -361,8 +361,8 @@ function updatePlot() {
     }
   });
 
-  Plotly.react("plot", Traces, graphLayout, {displayModeBar: false});
-
+  //Plotly.react("plot", Traces, graphLayout, {displayModeBar: false});
+  Plotly.react("plot", Traces, graphLayout, {displayModeBar: false, responsive: true});
   updateLatex();
 }
 
