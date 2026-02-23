@@ -31,6 +31,7 @@ let sigmas = [];
 
 let weights_mean = [];
 let weights_covariance = [];
+let transformedSigmaPoints = [];
 
 let transformedPoints = [];
 //let mu = 1;
@@ -174,7 +175,7 @@ function unscentedTransform(mean, standard_deviation, transformation_function) {
     "red"
   );
 
-  let transformedSigmaPoints = [];
+  transformedSigmaPoints = [];
   let x = 0;
   for (let i = 0; i < 3; i++) {
     x = sigmas[i];
