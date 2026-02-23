@@ -251,39 +251,11 @@ function updateLatex() {
     }
   );
   //newMeanComputationLatex
-  const newMeanComputationString = `\\mu' = \\sum_{i=0}^{2n} w_m^{[i]} \\mathbf{y}^{[i]} = ${weights_mean[0].toFixed(
-    3
-  )} \\times ${transformedPoints[0].toFixed(3)} + ${weights_mean[1].toFixed(
-    3
-  )} \\times ${transformedPoints[1].toFixed(3)} + ${weights_mean[2].toFixed(
-    3
-  )} \\times ${transformedPoints[2].toFixed(3)} = ${new_mean.toFixed(3)}`;
-  katex.render(
-    newMeanComputationString,
-    document.getElementById("newMeanComputationLatex"),
-    {
-      throwOnError: false,
-    }
-  );
+const newMeanComputationString = `\\mu' = \\sum_{i=0}^{2n} w_m^{[i]} y^{[i]} = ${weights_mean[0].toFixed(3)} \\times ${transformedSigmaPoints[0].toFixed(3)} + ${weights_mean[1].toFixed(3)} \\times ${transformedSigmaPoints[1].toFixed(3)} + ${weights_mean[2].toFixed(3)} \\times ${transformedSigmaPoints[2].toFixed(3)} = ${new_mean.toFixed(3)}`;
+katex.render(newMeanComputationString, document.getElementById("newMeanComputationLatex"), { throwOnError: false });
 
-  const newCovarianceComputationString = `\\sigma' = \\sum_{i=0}^{2n} w_c^{[i]} \\mathbf{y}^{[i]} = ${weights_covariance[0].toFixed(
-    3
-  )} \\times ${transformedPoints[0].toFixed(
-    3
-  )} + ${weights_covariance[1].toFixed(
-    3
-  )} \\times ${transformedPoints[1].toFixed(
-    3
-  )} + ${weights_covariance[2].toFixed(
-    3
-  )} \\times ${transformedPoints[2].toFixed(3)} = ${new_covariance.toFixed(3)}`;
-  katex.render(
-    newCovarianceComputationString,
-    document.getElementById("newCovarianceComputationLatex"),
-    {
-      throwOnError: false,
-    }
-  );
+const newCovarianceComputationString = `(\\sigma')^2 = \\sum_{i=0}^{2n} w_c^{[i]} (y^{[i]} - \\mu')^2 = ${weights_covariance[0].toFixed(3)} \\times (${transformedSigmaPoints[0].toFixed(3)} - ${new_mean.toFixed(3)})^2 + ${weights_covariance[1].toFixed(3)} \\times (${transformedSigmaPoints[1].toFixed(3)} - ${new_mean.toFixed(3)})^2 + ${weights_covariance[2].toFixed(3)} \\times (${transformedSigmaPoints[2].toFixed(3)} - ${new_mean.toFixed(3)})^2 = ${new_covariance.toFixed(3)}`;
+katex.render(newCovarianceComputationString, document.getElementById("newCovarianceComputationLatex"), { throwOnError: false });
 }
 
 function updatePlot() {
