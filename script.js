@@ -287,14 +287,20 @@ function updateLatex() {
 }
 
 function updatePlot() {
+  let visibilityState = {};
+  const plotDiv = document.getElementById("plot");
+  if (plotDiv && plotDiv.data) {
+    plotDiv.data.forEach(trace => {
+      if (trace.name) {
+        visibilityState[trace.name] = trace.visible; 
+      }
+    });
+  }
+
   Traces = [];
   old_mean = parseFloat(document.getElementById("meanInput").value);
-  old_std_dev = parseFloat(
-    document.getElementById("standardDeviationInput").value
-  );
-  transformation_function = document.getElementById(
-    "transformationFunctionInput"
-  ).value; //"2 * x";
+  old_std_dev = parseFloat(document.getElementById("standardDeviationInput").value);
+  transformation_function = document.getElementById("transformationFunctionInput").value;
 
   const graphLayout = {
     title: "Unscented Transform",
@@ -314,7 +320,7 @@ function updatePlot() {
   // histogram
   var histogram_x = [];
   for (var i = 0; i < 50000; i++) {
-    histogram_x[i] = gaussianRandom(old_mean, old_std_dev); //(Math.random() * 10) - 5;
+    histogram_x[i] = gaussianRandom(old_mean, old_std_dev); 
   }
   histogram_x = transformPoints(transformation_function, histogram_x);
   Traces.push({
@@ -326,7 +332,6 @@ function updatePlot() {
     opacity: 0.5,
   });
 
-  // unscented transform
   [new_mean, new_covariance] = unscentedTransform(
     old_mean,
     old_std_dev,
@@ -350,9 +355,15 @@ function updatePlot() {
   [x_points, y_points] = generateGaussian(new_mean, new_std_dev, -5, 5, 0.01);
   drawCurve(x_points, y_points, "Transformed Gaussian", "blue");
 
-  Plotly.newPlot("plot", Traces, graphLayout, {displayModeBar: false});
+  Traces.forEach(trace => {
+    if (trace.name && visibilityState[trace.name] !== undefined) {
+      trace.visible = visibilityState[trace.name];
+    }
+  });
 
-  updateLatex(alpha, beta, kappa, n, lambda);
+  Plotly.react("plot", Traces, graphLayout, {displayModeBar: false});
+
+  updateLatex();
 }
 
 updatePlot();
